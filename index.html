@@ -1023,7 +1023,7 @@ a, button, input, textarea, select {
   <!-- ===========================
        SCREEN 1: LOGIN
        =========================== -->
-  <div class="screen active" id="screen-login">
+  <div class="screen" id="screen-login" style="display:none!important">
 
     <div class="header">
       <!-- Filter Press SVG icon -->
@@ -1078,7 +1078,7 @@ a, button, input, textarea, select {
   <!-- ===========================
        SCREEN 2: MAIN
        =========================== -->
-  <div class="screen" id="screen-main">
+  <div class="screen active" id="screen-main">
 
     <div class="header">
       <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-3);margin-bottom:var(--space-1);">
@@ -1793,19 +1793,8 @@ function handleLogin() {
 }
 
 function handleLogout() {
-  // Stop timer if running
-  stopTimer();
-
-  state.currentOperator = null;
-  state.currentCode     = null;
-  state.batches         = [];
-  state.isRunning       = false;
-  state.runStartTime    = null;
-  state.sessionLogs     = [];
-  state.processing      = false;
-  showScreen('screen-login');
-  document.getElementById('operator-code').focus();
-}
+    window.location.href = 'https://kmjz-master-hub.vercel.app';
+  }
 
 /* ===========================
    HELPERS
@@ -1908,6 +1897,34 @@ document.getElementById('modal-confirm').addEventListener('click', function(e) {
 
 // Focus input on load
 document.getElementById('operator-code').focus();
+</script>
+
+<script>
+// === AUTO-SET OPERATOR FROM LOCALSTORAGE (no code wall) ===
+(function() {
+  var name = null;
+  try { name = localStorage.getItem('kmjz_operator_name'); } catch(e) {}
+  if (name && typeof state !== 'undefined' && state) {
+    state.currentOperator = name;
+    if (typeof state.currentCode !== 'undefined') {
+      try { state.currentCode = localStorage.getItem('kmjz_operator_code') || ''; } catch(e) {}
+    }
+  } else if (name) {
+    if (typeof currentOperator !== 'undefined') {
+      currentOperator = name;
+    }
+    window._autoOperator = name;
+  }
+  // Update operator badge if exists
+  var badge = document.getElementById('operatorName') || document.getElementById('operatorBadge');
+  if (badge && name) badge.textContent = name;
+  // Update any operator display elements
+  document.querySelectorAll('[id*="perator"]').forEach(function(el) {
+    if (el.tagName === 'SPAN' && el.id.toLowerCase().includes('name') && name) {
+      el.textContent = name;
+    }
+  });
+})();
 </script>
 </body>
 </html>
